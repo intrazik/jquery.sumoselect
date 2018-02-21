@@ -71,6 +71,11 @@
                 Pstate: [],
                 lastUnselected: null,
 
+                setOptions: function(options){
+                    settings = $.extend(settings, options);
+                    // this.reload();
+                },
+
                 createElems: function () {
                     var O = this;
                     O.E.wrap('<div class="SumoSelect" tabindex="0" role="button" aria-expanded="false">');
@@ -173,8 +178,16 @@
                     if (opt.attr('class'))
                         li.addClass(opt.attr('class'));
 
-                    if (opt.attr('title'))
+                    if (opt.attr('style'))
+                        li.attr('style', opt.attr('style'));
+
+                    if (opt.attr('title')){
                         li.attr('title', opt.attr('title'));
+                    }
+                    else
+                    {
+                        li.attr('title', opt.text());
+                    }
 
                     return li;
                 },
