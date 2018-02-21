@@ -143,14 +143,17 @@
                     var lis = [], O = this;
                     $(opts).each(function (i, opt) {       // parsing options to li
                         opt = $(opt);
-                        lis.push(opt.is('optgroup') ?
-                            $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label>' + opt.attr('label') + '</label><ul></ul></li>')
-                                .find('ul')
+                        if (opt.is('optgroup'))
+                            {
+                                li_optgroup = $('<li class="group ' + (opt[0].disabled ? 'disabled' : '') + '"><label class="group-label">' + opt.attr('label') + '</label><ul></ul></li>')                                
+                                lis.push(li_optgroup.find('ul')
                                 .append(O.prepItems(opt.children(), opt[0].disabled))
-                                .end()
-                            :
-                            O.createLi(opt, d)
-                        );
+                                .end())
+                                O.onOptGroupClick(li_optgroup);
+                            }
+                            else{
+                                lis.push(O.createLi(opt, d))
+                            }
                     });
                     return lis;
                 },
@@ -509,6 +512,38 @@
                             li.parent().find('li.selected').removeClass('selected'); //if not multiselect then remove all selections from this list
                             li.toggleClass('selected');
                             li.data('opt')[0].selected = true;
+                        }
+
+                        //branch for combined change event.
+                        if (!(O.is_multi && settings.triggerChangeCombined && (O.is_floating || settings.okCancelInMulti))) {
+                            O.setText();
+                            O.callChange();
+                        }
+
+                        if (!O.is_multi) O.hideOpts(); //if its not a multiselect then hide on single select.
+                    });
+                },
+
+                onOptGroupClick: function(li) {
+                    var O = this;
+                    li.find('label.group-label').click(function () {
+                        var li = $(this).parent('li');
+                        if (li.hasClass('disabled')) return;
+                        var txt = "";
+                        var li_group_list = li.find('li.opt');
+
+                        if (O.is_multi) {
+                            
+                            li_group_list.toggleClass('selected');
+                            li_group_list.data('opt')[0].selected = li_group_list.hasClass('selected');
+                            if (li_group_list.data('opt')[0].selected === false) {
+                                O.lastUnselected = li_group_list.data('opt')[0].textContent;
+                            }
+                            O.selAllState();
+                        }
+                        else {
+                             //if not multiselect then return
+                            return
                         }
 
                         //branch for combined change event.
