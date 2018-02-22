@@ -533,12 +533,14 @@
                         var li_group_list = li.find('li.opt');
 
                         if (O.is_multi) {
-                            
-                            li_group_list.toggleClass('selected');
-                            li_group_list.data('opt')[0].selected = li_group_list.hasClass('selected');
-                            if (li_group_list.data('opt')[0].selected === false) {
-                                O.lastUnselected = li_group_list.data('opt')[0].textContent;
-                            }
+                            li_group_list.each(function(){
+                                var l = $(this);
+                                l.toggleClass('selected');
+                                l.data('opt')[0].selected = l.hasClass('selected');
+                                if (l.data('opt')[0].selected === false) {
+                                    O.lastUnselected = l.data('opt')[0].textContent;
+                                }
+                            })
                             O.selAllState();
                         }
                         else {
